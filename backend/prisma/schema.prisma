@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model AdminUser {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String   // bcrypt hash
+  createdAt DateTime @default(now())
+}
+
+model Platform {
+  id          Int       @id @default(autoincrement())
+  name        String
+  url         String   @unique
+  imageUrl    String
+  description String
+  category    String
+  clicks      Click[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Click {
+  id         Int      @id @default(autoincrement())
+  platform   Platform @relation(fields: [platformId], references: [id])
+  platformId Int
+  createdAt  DateTime @default(now())
+}
+
+model Visitor {
+  id        Int      @id @default(autoincrement())
+  ip        String
+  ua        String
+  createdAt DateTime @default(now())
+}
+
+model Subscriber {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
