@@ -7,13 +7,17 @@ export default function SubscribeForm() {
   const [email, setEmail] = useState('');
   const [ok, setOk] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    const res = await fetch(`${API}/subscribers`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email }) });
-    setLoading(false);
-    if (res.ok) { setOk(true); setEmail(''); confetti(); }
+  setError(null);
+  const res = await fetch(`${API}/api/subscribe`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email }) });
+  const data = await res.json().catch(()=>({}));
+  setLoading(false);
+  if (res.ok) { setOk(true); setEmail(''); confetti(); }
+  else setError(data.error || 'Subscription failed');
   }
 
   function confetti() {
@@ -34,7 +38,8 @@ export default function SubscribeForm() {
       <button disabled={loading} className="rounded-2xl px-5 py-3 border border-white/20 bg-white/10 hover:bg-white/20 transition animate-pulse disabled:opacity-50">
         {loading ? 'Subscribing…' : 'Subscribe'}
       </button>
-      {ok && <span className="text-sm opacity-80 self-center">Thanks! Check your inbox.</span>}
+  {ok && <span className="text-sm opacity-80 self-center">Check your inbox to confirm.</span>}
+  {error && <span className="text-sm text-red-400 self-center">{error}</span>}
     </form>
   );
 }

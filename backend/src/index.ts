@@ -11,6 +11,10 @@ import { admin } from './routes/admin.js';
 import { platforms } from './routes/platforms.js';
 import { analytics } from './routes/analytics.js';
 import { subscribers } from './routes/subscribers.js';
+import { subscribe } from './routes/subscribe.js';
+import { confirm } from './routes/confirm.js';
+import { adminPlatforms } from './routes/admin-platforms.js';
+import { adminSubscribers } from './routes/admin-subscribers.js';
 import path from 'path';
 import fs from 'fs';
 // @ts-ignore - multer types may not be installed
@@ -64,10 +68,17 @@ app.use(rateLimit({ windowMs, max, standardHeaders: true, legacyHeaders: false }
 
 app.get('/health', (_req, res) => res.json({ ok: true }));
 
+// legacy routes (backwards compatibility)
 app.use('/admin', admin);
 app.use('/platforms', platforms);
 app.use('/analytics', analytics);
 app.use('/subscribers', subscribers);
+
+// new production style namespaced API
+app.use('/api/subscribe', subscribe);
+app.use('/api/confirm', confirm);
+app.use('/api/admin/platforms', adminPlatforms);
+app.use('/api/admin/subscribers', adminSubscribers);
 
 // File uploads (logo images) - stored locally under /uploads
 const uploadDir = path.resolve(process.cwd(), 'uploads');

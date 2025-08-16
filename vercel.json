@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "builds": [
+    { "src": "frontend/next.config.mjs", "use": "@vercel/next" }
+  ],
+  "env": {
+    "NEXT_PUBLIC_BACKEND_URL": "https://api.example.com",
+    "NEXT_PUBLIC_APP_URL": "https://example.com"
+  },
+  "routes": [
+    { "src": "/uploads/(.*)", "dest": "/uploads/$1" }
+  ]
+}

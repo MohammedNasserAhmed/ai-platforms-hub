@@ -10,11 +10,11 @@ export default function PlatformsAdmin(){
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : '';
   const auth = { Authorization: `Bearer ${token}` } as any;
 
-  async function load(){ const r = await fetch(`${API}/platforms`); setItems(await r.json()); }
+  async function load(){ const r = await fetch(`${API}/api/admin/platforms`, { headers: auth }); if(r.ok) setItems(await r.json()); }
   useEffect(()=>{ load(); }, []);
 
   async function remove(id:number){
-    const res = await fetch(`${API}/platforms/${id}`, { method:'DELETE', headers: auth });
+  const res = await fetch(`${API}/api/admin/platforms/${id}`, { method:'DELETE', headers: auth });
     if (res.ok) load();
   }
 

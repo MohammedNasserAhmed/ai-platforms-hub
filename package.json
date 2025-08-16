@@ -8,7 +8,12 @@
     "start": "concurrently -n FRONTEND,BACKEND -c blue,green \"pnpm --filter frontend start\" \"pnpm --filter backend start\"",
     "db:push": "pnpm --filter backend prisma db push",
     "db:migrate": "pnpm --filter backend prisma migrate deploy",
-    "seed": "pnpm --filter backend ts-node ../scripts/seed.ts"
+  "seed": "pnpm --filter backend ts-node ../scripts/seed.ts",
+  "build:prod": "pnpm run build",
+  "db:migrate:prod": "pnpm --filter backend prisma migrate deploy",
+  "db:seed:prod": "pnpm --filter backend ts-node ../scripts/seed.ts",
+  "deploy": "echo 'Deploy via Vercel: vercel --prod'",
+  "env:setup": "echo 'Copy .env.example to .env and fill values'"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",

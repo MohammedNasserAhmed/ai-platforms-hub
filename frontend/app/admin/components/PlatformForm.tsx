@@ -17,9 +17,9 @@ export default function PlatformForm({ onSuccess, redirectOnSuccess, showHeading
   const router = useRouter();
   const { push } = useToast();
 
-  useEffect(()=>{ (async()=>{ try { const res = await fetch(`${API}/platforms`); if(res.ok){ const data: Array<{category:string}> = await res.json(); const cats = Array.from(new Set(data.map(d=> d.category))).sort(); setCategories(cats); } } catch{} })(); }, []);
+  useEffect(()=>{ (async()=>{ try { const res = await fetch(`${API}/api/admin/platforms`); if(res.ok){ const data: Array<{category:string}> = await res.json(); const cats = Array.from(new Set(data.map(d=> d.category))).sort(); setCategories(cats); } } catch{} })(); }, []);
   // edit mode load
-  useEffect(()=>{ if(!id) return; (async()=>{ try { const r = await fetch(`${API}/platforms/${id}`); if(r.ok){ const data = await r.json(); setForm({ name:data.name, url:data.url, imageUrl:data.imageUrl, description:data.description, category:data.category }); } } catch{} })(); }, [id]);
+  useEffect(()=>{ if(!id) return; (async()=>{ try { const r = await fetch(`${API}/api/admin/platforms/${id}`); if(r.ok){ const data = await r.json(); setForm({ name:data.name, url:data.url, imageUrl:data.imageUrl, description:data.description, category:data.category }); } } catch{} })(); }, [id]);
 
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : '';
   function update<K extends keyof PlatformFormValues>(k:K, v:string){ setForm(f=> ({ ...f, [k]: v })); }
@@ -43,7 +43,7 @@ export default function PlatformForm({ onSuccess, redirectOnSuccess, showHeading
     if (body.name.trim().length < 2) { setSaving(false); setError('Name too short'); return; }
     try {
   const method = id ? 'PUT' : 'POST';
-  const endpoint = id ? `${API}/platforms/${id}` : `${API}/platforms`;
+  const endpoint = id ? `${API}/api/admin/platforms/${id}` : `${API}/api/admin/platforms`;
   const res = await fetch(endpoint, { method, headers:{ 'Content-Type':'application/json', Authorization:`Bearer ${token}` }, body: JSON.stringify(body) });
       if(!res.ok){ const j = await res.json().catch(()=>({})); throw new Error(j.error || `Failed (${res.status})`); }
   const created = await res.json(); setDone(true); push({ message: id ? 'Platform updated' : 'Platform created', type:'success' });
