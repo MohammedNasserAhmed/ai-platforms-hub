@@ -14,7 +14,23 @@ export default function Page(){
   const [category, setCategory] = useState<string|undefined>(undefined);
   const [q, setQ] = useState('');
 
-  useEffect(()=>{ fetch(`${API}/analytics/visit`, { method: 'POST' }); }, []);
+  useEffect(()=>{
+    let aborted = false;
+    const controller = new AbortController();
+    const t = setTimeout(()=> controller.abort(), 4000);
+    (async ()=>{
+      try {
+        const resp = await fetch(`${API}/analytics/visit`, { method: 'POST', signal: controller.signal });
+        if(!resp.ok) throw new Error('visit failed');
+      } catch {
+        // fallback: attempt same-origin proxy route if provided later
+        if(!aborted){
+          try { await fetch('/api/visit', { method: 'POST' }); } catch {/* ignore */}
+        }
+      } finally { clearTimeout(t); }
+    })();
+    return ()=> { aborted = true; clearTimeout(t); controller.abort(); };
+  }, []);
 
   useEffect(()=>{ load(); }, [category, q]);
   async function load(){
