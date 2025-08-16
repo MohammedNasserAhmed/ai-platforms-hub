@@ -1,12 +1,12 @@
 import 'dotenv/config';
-import { prisma } from '../backend/src/utils/prisma.js';
 import bcrypt from 'bcryptjs';
+import { prisma } from '../backend/src/utils/prisma.js';
 
 async function main(){
   const adminEmail = 'admin@example.com';
   const adminPass = 'admin123';
   const hash = await bcrypt.hash(adminPass, 10);
-  await prisma.adminUser.upsert({ where: { email: adminEmail }, update: {}, create: { email: adminEmail, password: hash } });
+  await prisma.adminUser.upsert({ where: { email: adminEmail }, update: { password: hash }, create: { email: adminEmail, password: hash } });
 
   const platforms = [
     { name: 'OpenAI', url: 'https://openai.com', imageUrl: 'https://logo.clearbit.com/openai.com', description: 'Models, APIs, research', category: 'Research' },
@@ -16,10 +16,16 @@ async function main(){
     { name: 'LangChain', url: 'https://langchain.com', imageUrl: 'https://logo.clearbit.com/langchain.com', description: 'Framework for LLM apps', category: 'Framework' },
   ];
 
-  for (const p of platforms){
-    await prisma.platform.upsert({ where: { url: p.url }, update: {}, create: p });
-  }
+  await Promise.all(
+    platforms.map(p =>
+      prisma.platform.upsert({ where: { url: p.url }, update: {}, create: p })
+    )
+  );
 
+  console.log('Seed complete. Admin user created.');
+
+  // WARNING: Logging credentials is insecure for production environments.
+  console.log('Seed complete. Admin: admin@example.com / admin123');
   console.log('Seed complete. Admin: admin@example.com / admin123');
 }
 
